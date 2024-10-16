@@ -2,10 +2,30 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /var/www/my-laravel-app
+    destination: /var/www/html
+    
 hooks:
-  # AfterInstall:
-  #   - location: scripts/setup.sh
-  #     timeout: 300
-  #     runas: root
+  BeforeInstall:
+    - name: Install Dependencies
+      timeout: 300
+      runas: root
+      command: |
+        cd /var/www/html
+        composer install --no-dev --optimize-autoloader
+        npm install
+        npm run production
+        
+  ApplicationStart:
+    - name: Start Server
+      timeout: 300
+      runas: root
+      command: |
+        cd /var/www/html
+        php artisan serve --host=0.0.0.0 --port=8000 &
 
+  ApplicationStop:
+    - name: Stop Server
+      timeout: 300
+      runas: root
+      command: |
+        pkill -f 'php artisan serve'

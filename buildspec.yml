@@ -2,22 +2,13 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      php: 7.4
+      php: 8.0
     commands:
-      - composer install --no-dev
-      - npm install
-      - npm run production
-  pre_build:
-    commands:
-      - echo Pre-build started on `date`
+      - composer install --no-dev --optimize-autoloader
+      - php artisan migrate --force
   build:
     commands:
-      - echo Build started on `date`
-      - zip -r ../my-laravel-app.zip .
-  post_build:
-    commands:
-      - echo Build completed on `date`
+      - echo "Build completed"
 artifacts:
   files:
-    - ../my-laravel-app.zip
-
+    - '**/*'
